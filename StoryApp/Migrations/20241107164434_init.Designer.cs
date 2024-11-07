@@ -12,8 +12,8 @@ using StoryApp.Data;
 namespace StoryApp.Migrations
 {
     [DbContext(typeof(DataContext))]
-    [Migration("20241107092949_InitialMIgration")]
-    partial class InitialMIgration
+    [Migration("20241107164434_init")]
+    partial class init
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -27,15 +27,36 @@ namespace StoryApp.Migrations
 
             modelBuilder.Entity("StoryApp.Entities.Story", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<long>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("bigint")
+                        .HasColumnName("Id");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<long>("Id"));
 
                     b.Property<string>("Body")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("_createdAt");
+
+                    b.Property<long?>("CreatedBy")
+                        .HasColumnType("bigint")
+                        .HasColumnName("_createdBy");
+
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("bit")
+                        .HasColumnName("_isDeleted");
+
+                    b.Property<DateTime?>("LastModifiedAt")
+                        .HasColumnType("datetime2")
+                        .HasColumnName("_lastModifiedAt");
+
+                    b.Property<long?>("LastModifiedBy")
+                        .HasColumnType("bigint")
+                        .HasColumnName("_lastModifiedBy");
 
                     b.Property<DateTime>("PublishedDate")
                         .HasColumnType("datetime2");
