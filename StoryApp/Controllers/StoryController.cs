@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Azure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using StoryApp.Data;
@@ -34,6 +35,17 @@ namespace StoryApp.Controllers
             await _db.SaveChangesAsync();
             var responseStoryDto = _mapper.Map<StoryDto>(story);
             return Ok(responseStoryDto);
+        }
+
+        [HttpGet]
+        [Route("{id:int}")]
+        public async Task<ActionResult<StoryDto>> Story([FromRoute] int id)
+        {
+            
+            Story story = _db.Stories.First(x => x.Id == id);
+            var storyDto = _mapper.Map<StoryDto>(story);
+            
+            return storyDto;
         }
     }
 }
