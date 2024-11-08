@@ -6,6 +6,10 @@ using AutoMapper;
 using StoryApp.Data;
 using StoryApp.Queries.Handlers;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Data.SqlClient;
+using Microsoft.AspNetCore.Http.HttpResults;
+using static System.Runtime.InteropServices.JavaScript.JSType;
+using StoryApp.Migrations;
 
 namespace StoryApp.Commands.Handlers
 {
@@ -56,12 +60,25 @@ namespace StoryApp.Commands.Handlers
             }
 
             return null;
-
         }
 
         public async Task<bool> Handle(DeleteStoryCommand request, CancellationToken cancellationToken)
         {
-            var story = await _db.Stories.SingleOrDefaultAsync(x => x.Id == request.Id);
+            //CREATE PROCEDURE GetStoryById
+            // @Id INT
+            //AS
+            //BEGIN
+
+            //    select* from[dbo].[Stories]
+            //            Where ID = @Id
+            //END
+
+            //EXEC GetStoryById @Id = 1
+
+            //var IdParam = new SqlParameter("@Id", request.Id);
+            //var stories =  _db.Stories.FromSqlRaw("EXEC GetStoryById @Id", IdParam).AsEnumerable().FirstOrDefault(); ;
+
+            var story = await _db.Stories.FirstOrDefaultAsync(x => x.Id == request.Id);
 
             if (story == null)
             {

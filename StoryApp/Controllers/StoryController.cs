@@ -108,7 +108,7 @@ namespace StoryApp.Controllers
             }
             var responseModel = await _mediator.Send(command);
 
-            if (responseModel)
+            if (!responseModel)
             {
                 _logger.LogInformation($"Problem occured");
                 return NotFound(); //TODO: not executed/created exception
