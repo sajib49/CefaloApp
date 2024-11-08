@@ -1,19 +1,41 @@
 ﻿using AutoMapper;
-using Azure;
+using MediatR;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
+using StoryApp.Commands;
 using StoryApp.Data;
 using StoryApp.DTOs;
 using StoryApp.Entities;
-using static Azure.Core.HttpHeader;
+using StoryApp.Queries;
 
 namespace StoryApp.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class StoryController(DataContext _db,
-            IMapper _mapper) : ControllerBase
+    [Produces("application/json")]
+    public class StoryController : ControllerBase
     {
+
+        private readonly IMapper _mapper;
+        private readonly IMediator _mediator;
+        private readonly DataContext _db;
+        private readonly ILogger<StoryController> _logger;
+        public StoryController(
+            IMapper mapper,
+            IMediator mediator,
+            ILoggerFactory loggerFactory,
+            DataContext db)
+        {
+            _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
+            _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
+            if (loggerFactory == null)
+                throw new ArgumentNullException(nameof(loggerFactory));
+            _logger = loggerFactory.CreateLogger<StoryController>();
+            _db = db;
+        }
+
+
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StoryDto>>> Story()
         {
@@ -21,20 +43,39 @@ namespace StoryApp.Controllers
             var stories = await _db.Stories.ToListAsync();
             var storiesDtos = _mapper.Map<IEnumerable<StoryDto>>(stories);
             return Ok(storiesDtos);
+        }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<StoryDto>> GetMemberById([FromRoute] int id)
+        {
+            var query = new GetStoryQuery
+            {
+                Id = id
+            };
+
+            var story = await _mediator.Send(query);
+            return Ok(story);
         }
 
         [HttpPost]
-        public async Task<ActionResult<StoryDto>> Story([FromBody] StoryDto storyDto)
+        [ProducesResponseType(typeof(StoryDto), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(SerializableError), StatusCodes.Status400BadRequest)]
+        public async Task<ActionResult<StoryDto>> Story([FromBody] CreateStoryCommand command)
         {
             if (!ModelState.IsValid)
+            {
+                _logger.LogInformation("Validation Failed {modelState}", JsonConvert.SerializeObject(ModelState));
                 return BadRequest("Invalid input");
-            
-            var story = _mapper.Map<Story>(storyDto);
-            _db.Stories.Add(story);
-            await _db.SaveChangesAsync();
-            var responseStoryDto = _mapper.Map<StoryDto>(story);
-            return Ok(responseStoryDto);
+            }
+
+            var responseModel = await _mediator.Send(command);
+            if (responseModel == null)
+            {
+                _logger.LogInformation($"Problem occured while adding story : {command.Tile}");
+                return NotFound(); //TODO: not executed/created exception
+            }
+
+            return Created("Story has been created", responseModel);
         }
 
         [HttpGet]
