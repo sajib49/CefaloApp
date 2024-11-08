@@ -5,6 +5,7 @@ using StoryApp.Data;
 using StoryApp.DTOs;
 using StoryApp.Entities;
 using StoryApp.Queries.Handlers;
+using StoryApp.Repository;
 
 
 namespace StoryApp.Commands.Handlers
@@ -17,17 +18,19 @@ namespace StoryApp.Commands.Handlers
         private readonly IMapper _mapper;
         private readonly IMediator _mediator;
         private readonly ILogger<StoryQueryHandler> _logger;
+        private readonly IUnitOfWork _unitOfWork;
         public StoryCommandHandler(
          DataContext db,
          IMapper mapper,
          IMediator mediator,
-         ILoggerFactory loggerFactory)
+         ILoggerFactory loggerFactory,
+         IUnitOfWork unitOfWork)
 
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _mediator = mediator ?? throw new ArgumentNullException(nameof(mediator));
-
+            _unitOfWork = unitOfWork;
             if (loggerFactory == null)
                 throw new ArgumentNullException(nameof(loggerFactory));
             _logger = loggerFactory.CreateLogger<StoryQueryHandler>();
@@ -35,7 +38,14 @@ namespace StoryApp.Commands.Handlers
 
         public async Task<StoryDto> Handle(CreateStoryCommand command, CancellationToken cancellationToken)
         {
+      
+
             var story = _mapper.Map<Story>(command);
+
+            //_unitOfWork.StoryRepository.Add(story);
+            //_unitOfWork.Commit();
+
+
             _db.Stories.Add(story);
             await _db.SaveChangesAsync();
             var responseStoryDto = _mapper.Map<StoryDto>(story);
