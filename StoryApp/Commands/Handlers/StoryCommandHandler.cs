@@ -1,15 +1,11 @@
-﻿using MediatR;
-using StoryApp.DTOs;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
-using StoryApp.Entities;
-using AutoMapper;
-using StoryApp.Data;
-using StoryApp.Queries.Handlers;
+﻿using AutoMapper;
+using MediatR;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Data.SqlClient;
-using Microsoft.AspNetCore.Http.HttpResults;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using StoryApp.Migrations;
+using StoryApp.Data;
+using StoryApp.DTOs;
+using StoryApp.Entities;
+using StoryApp.Queries.Handlers;
+
 
 namespace StoryApp.Commands.Handlers
 {

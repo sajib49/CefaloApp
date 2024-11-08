@@ -7,10 +7,12 @@ using StoryApp.Commands;
 using StoryApp.Data;
 using StoryApp.DTOs;
 using StoryApp.Entities;
+using StoryApp.Helpers;
 using StoryApp.Queries;
 
 namespace StoryApp.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     [Produces("application/json")]

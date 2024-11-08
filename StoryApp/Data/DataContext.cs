@@ -2,12 +2,14 @@
 
 using Microsoft.EntityFrameworkCore;
 using StoryApp.Entities;
+using StoryApp.Models;
 
 namespace StoryApp.Data
 {
     public class DataContext(DbContextOptions options) : DbContext(options)
     {
         public DbSet<Story> Stories { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -29,7 +31,7 @@ namespace StoryApp.Data
                 modelBuilder.Entity<Story>().HasData(
                        new Story() 
                        {
-                           Id = 1,
+                           Id = 10,
                            Body = "Body Something 1",
                            Tile = "Title Something 1",
                            PublishedDate = DateTime.Now
@@ -63,6 +65,17 @@ namespace StoryApp.Data
                            PublishedDate = DateTime.Now.AddDays(5)
                        }
                 );
+
+                modelBuilder.Entity<User>().HasData(
+                new User
+                {
+                    Id = 1,
+                    FirstName = "System",
+                    LastName = "",
+                    Username = "System",
+                    Password = "System",
+                }
+            );
             }
         }
 
