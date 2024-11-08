@@ -35,7 +35,6 @@ namespace StoryApp.Controllers
             _db = db;
         }
 
-
         [HttpGet]
         public async Task<ActionResult<IEnumerable<StoryDto>>> Story()
         {
@@ -46,7 +45,7 @@ namespace StoryApp.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<StoryDto>> GetMemberById([FromRoute] int id)
+        public async Task<ActionResult<StoryDto>> GetStoryById([FromRoute] int id)
         {
             var query = new GetStoryQuery
             {
@@ -78,15 +77,46 @@ namespace StoryApp.Controllers
             return Created("Story has been created", responseModel);
         }
 
-        [HttpGet]
-        [Route("{id:int}")]
-        public async Task<ActionResult<StoryDto>> Story([FromRoute] int id)
+        [HttpPut]
+        [ProducesResponseType(typeof(StoryDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<StoryDto>> UpdateStoryAsync([FromBody] UpdateStoryCommand command)
         {
-            
-            Story story = _db.Stories.First(x => x.Id == id);
-            var storyDto = _mapper.Map<StoryDto>(story);
-            
-            return storyDto;
+            if (!ModelState.IsValid)
+            {
+                _logger.LogInformation("Validation Failed {modelState}", JsonConvert.SerializeObject(ModelState));
+                return BadRequest(ModelState);
+            }
+            var responseModel = await _mediator.Send(command);
+
+            if (responseModel == null)
+            {
+                _logger.LogInformation($"Problem occured");
+                return NotFound(); //TODO: not executed/created exception
+            }
+
+            return Ok(responseModel);            
+        }
+
+        [HttpDelete]
+        [ProducesResponseType(typeof(StoryDto), StatusCodes.Status200OK)]
+        public async Task<ActionResult<StoryDto>> DeleteStoryAsync([FromBody] DeleteStoryCommand command)
+        {
+            if (!ModelState.IsValid)
+            {
+                _logger.LogInformation("Validation Failed {modelState}", JsonConvert.SerializeObject(ModelState));
+                return BadRequest(ModelState);
+            }
+            var responseModel = await _mediator.Send(command);
+
+            if (responseModel)
+            {
+                _logger.LogInformation($"Problem occured");
+                return NotFound(); //TODO: not executed/created exception
+            }
+
+            return Ok(responseModel);
+
+
         }
     }
 }

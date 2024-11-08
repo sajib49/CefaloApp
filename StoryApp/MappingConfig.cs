@@ -13,6 +13,7 @@ namespace StoryApp
             {
                 config.CreateMap<StoryDto, Story>().ReverseMap();
                 config.CreateMap<CreateStoryCommand, Story>().ReverseMap();
+                config.CreateMap<UpdateStoryCommand, Story>().ReverseMap();
             });
         }
 
