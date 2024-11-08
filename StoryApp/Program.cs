@@ -8,6 +8,7 @@ using StoryApp.Data;
 using StoryApp.DTOs;
 using StoryApp.Helpers;
 using StoryApp.Models;
+using StoryApp.Repository;
 using StoryApp.Services;
 using StoryApp.Validators;
 using System;
@@ -32,6 +33,7 @@ builder.Services.AddSingleton(mapper);
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.Configure<AppSettings>(builder.Configuration.GetSection("AppSettings"));
 builder.Services.AddScoped<IUserService, UserService>();
+//builder.Services.AddScoped<IStoryRepository, StoryRepository>();
 
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
